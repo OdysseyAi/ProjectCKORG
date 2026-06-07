@@ -1,7 +1,3 @@
-/**
- * Bayer 4×4 ordered dither - animated background + interactions
- */
-
 const BAYER_4 = [
   [0, 8, 2, 10],
   [12, 4, 14, 6],
@@ -11,41 +7,40 @@ const BAYER_4 = [
 
 const PARAMS = {
   food: {
-    expect: "Однообразная, тяжёлая еда; мало выбора специй.",
-    reality: "Пельмени, блины, каша - вкусно; продукты часто свежее, чем на Западе.",
+    expect: "Однообразная, тяжёлая еда. Мало выбора специй.",
+    reality: "Пельмени, блины, каша - вкусные. Продукты часто свежее, чем на Западе.",
     caption: "Еда: стереотип «скучной кухни» не выдержал проверки интервью.",
   },
   transport: {
     expect: "Сложно ориентироваться, мало карт и навигации.",
-    reality: "Инфраструктура города современная; главная трудность - язык, а не транспорт.",
-    caption: "Транспорт: ожидали хаос - получили рабочую городскую среду.",
+    reality: "Инфраструктура города современная. Главная трудность - язык, а не транспорт.",
+    caption: "Транспорт: ожидали хаос, а получили приятную городскую среду.",
   },
   communication: {
     expect: "Русские холодные и закрытые.",
-    reality: "Сначала серьёзны - после знакомства очень открытые и готовы помочь.",
-    caption: "Общение: «холодность» оказалась этапом адаптации, а не правилом.",
+    reality: "Сначала серьёзны, после знакомства очень открытые и готовы помочь.",
+    caption: "Общение: «холодность» оказалась этапом адаптации.",
   },
   weather: {
     expect: "Невыносимый холод без подготовки.",
-    reality: "Климат тяжёлый первые месяцы, но к нему реально привыкнуть.",
+    reality: "Климат тяжёлый в первые месяцы, но к нему можно привыкнуть.",
     caption: "Погода: ожидания были жёстче, чем долгосрочный опыт.",
   },
   safety: {
     expect: "Опасно, особенно по сравнению с домом.",
     reality: "Несколько респондентов отметили, что чувствуют себя здесь безопаснее.",
-    caption: "Безопасность: медийный образ сильно расходится с личным опытом.",
+    caption: "Безопасность: образ созданный медиа сильно расходится с личным опытом.",
   },
 };
 
 const HOTSPOTS = {
-  language: "Языковой барьер - главная боль первых месяцев. Базовые фразы и курсы русского снимают половину стресса.",
-  climate: "Зима требует правильной обуви и одежды. Респонденты говорят: со временем климат перестаёт доминировать в повседневности.",
-  etiquette: "Снять куртку в столовой, не ходить в обуви по квартире - неожиданный культурный код, к которому привыкают.",
-  food: "Не хватает острой еды или привычных специй - решаемо поиском в сетевых магазинах и адаптацией вкуса.",
-  stereotypes: "Образ из игр и истории школы (СССР, «коммунизм») сменяется личным опытом после приезда.",
+  language: "Языковой барьер: главная боль первых месяцев. Базовые фразы и курсы русского снимают половину стресса.",
+  climate: "Зима требует правильной обуви и одежды. Респонденты говорят: со временем климат перестаёт докучать в повседневности.",
+  etiquette: "Снять куртку в столовой, не ходить в обуви по квартире. Неожиданный культурный код, к которому привыкают.",
+  food: "Не хватает острой еды или привычных специй. Решаемо поиском в онлайн-магазинах и адаптацией вкусовых привычек.",
+  stereotypes: "Образ из игр и школьной истории (СССР, «коммунизм») сменяется личным опытом после приезда.",
 };
 
-/* Bayer dither canvas background */
 (function initDitherBackground() {
   const canvas = document.getElementById("dither-bg");
   if (!canvas) return;
@@ -56,12 +51,25 @@ const HOTSPOTS = {
   let raf = 0;
   let running = true;
 
-  const palette = {
+  const paletteDefault = {
     sand: [215, 192, 161],
     white: [255, 255, 255],
     brown: [132, 110, 77],
     bg: [247, 244, 239],
   };
+
+  const paletteContrast = {
+    sand: [220, 220, 220],
+    white: [255, 255, 255],
+    brown: [0, 0, 0],
+    bg: [255, 255, 255],
+  };
+
+  function getPalette() {
+    return document.documentElement.classList.contains("contrast-mode")
+      ? paletteContrast
+      : paletteDefault;
+  }
 
   function resize() {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -104,6 +112,7 @@ const HOTSPOTS = {
         const by = Math.floor(y / scale);
         const d = bayerThreshold(bx, by, level);
 
+        const palette = getPalette();
         let r, g, b;
         if (d) {
           r = palette.sand[0];
@@ -150,7 +159,6 @@ const HOTSPOTS = {
   });
 })();
 
-/* Compare slider */
 (function initCompare() {
   const slider = document.getElementById("compare-slider");
   const expectEl = document.getElementById("compare-expect");
@@ -217,7 +225,6 @@ const HOTSPOTS = {
   updateCompare("food", 50);
 })();
 
-/* Map hotspots */
 (function initHotspots() {
   const detail = document.getElementById("hotspot-text");
   const buttons = document.querySelectorAll(".hotspot");
@@ -238,7 +245,6 @@ const HOTSPOTS = {
   show("language");
 })();
 
-/* Scroll reveal & nav */
 (function initScroll() {
   const reveals = document.querySelectorAll(".reveal");
   const navLinks = document.querySelectorAll(".main-nav a[data-section]");
@@ -283,7 +289,6 @@ const HOTSPOTS = {
   onScroll();
 })();
 
-/* Stat counters */
 (function initCounters() {
   const cards = document.querySelectorAll(".stat-card[data-count]");
   const obs = new IntersectionObserver(
@@ -314,7 +319,6 @@ const HOTSPOTS = {
   cards.forEach((c) => obs.observe(c));
 })();
 
-/* Tips cards */
 (function initTips() {
   const deck = document.getElementById("tips-deck");
   if (!deck) return;
@@ -327,7 +331,6 @@ const HOTSPOTS = {
   });
 })();
 
-/* Mobile nav */
 (function initNav() {
   const toggle = document.querySelector(".nav-toggle");
   const nav = document.querySelector(".main-nav");
@@ -340,7 +343,6 @@ const HOTSPOTS = {
   });
 })();
 
-/* Panel tilt */
 (function initTilt() {
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   document.querySelectorAll("[data-tilt]").forEach((panel) => {
@@ -356,7 +358,6 @@ const HOTSPOTS = {
   });
 })();
 
-/* Cursor dither halo */
 (function initCursor() {
   const halo = document.getElementById("cursor-dither");
   if (!halo || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -384,7 +385,6 @@ document.getElementById("back-top")?.addEventListener("click", () => {
   window.scrollTo({ top: 0, behavior: "smooth" });
 });
 
-/* Sources modal (fetch fails on file:// — embedded copy is used as fallback) */
 (function initSources() {
   const modal = document.getElementById("sources-modal");
   const titleEl = document.getElementById("sources-modal-title");
@@ -397,15 +397,13 @@ document.getElementById("back-top")?.addEventListener("click", () => {
     images: { title: "Источники изображений", file: "Источники изображений.txt" },
   };
 
-  /* Sync with Источники информации.txt / Источники изображений.txt */
   const SOURCES_EMBEDDED = {
-    info: `*тут я потом добавлю больше источников
-1. Гончарова Е.И. Образ России в представлении иностранных студентов // Русский язык за рубежом. - 2023. - № 2. - С. 45–52.
+    info: `1. Гончарова Е.И. Образ России в представлении иностранных студентов // Русский язык за рубежом. - 2023. - № 2. - С. 45–52.
 Ссылка: https://www.elibrary.ru/item.asp?id=54233167
 2. Дагаева К.И. Роль стереотипов в интерпретации образа России в инокультуре // Вестник РУДН. Культурология. - 2024. - Т. 18, № 1. - С. 112–126.
 Ссылка: https://doi.org/10.22363/2312-8011-2024-18-1-112-126 (DOI рабочий)
 3. Pavlovskaya A. :Pavlovskaya A.V. Western Stereotypes of Russia: Historical Roots and Modern Transformations // Russia in the Global World. - 2021. - No. 3. - P. 88–102.
-Ссылка: https://istina.msu.ru/publications/article/379876543/ (портфель автора на портале МГУ) ссцлки тебе даю на статьи для достоверности`,
+Ссылка: https://istina.msu.ru/publications/article/379876543/`,
     images: `Рисунок 1 [Логотип) /Взято с открытого источника. – Режим доступа: https://www.pngwing.com/ru (дата обращения: 18.05.2025).
 
 Рисунок 2 [Логотип] / Взято с открытого источника. – Режим доступа: https://www.pngwing.com/ru (дата обращения: 18.05.2025).
@@ -505,14 +503,6 @@ document.getElementById("back-top")?.addEventListener("click", () => {
 
     bodyEl.appendChild(wrap);
 
-    if (footEl) {
-      footEl.innerHTML = "";
-      const note = document.createElement("p");
-      note.className = "modal-note";
-      note.textContent =
-        "Авторское право: материалы третьих лиц используются в учебно-исследовательских целях с указанием источников. Все права на оригинальные тексты и дизайн сайта принадлежат авторам проекта.";
-      footEl.appendChild(note);
-    }
   }
 
   async function loadSourcesText(kind) {
@@ -523,9 +513,7 @@ document.getElementById("back-top")?.addEventListener("click", () => {
       try {
         const res = await fetch(encodeURI(meta.file), { cache: "no-store" });
         if (res.ok) return await res.text();
-      } catch {
-        /* fall through to embedded */
-      }
+      } catch {}
     }
 
     return SOURCES_EMBEDDED[kind] || "";
@@ -567,7 +555,6 @@ document.getElementById("back-top")?.addEventListener("click", () => {
   });
 })();
 
-/* Countries -> Rutube preview */
 (function initCountryRutubePreview() {
   const chips = document.querySelectorAll(".country-chip");
   if (!chips.length) return;
@@ -611,7 +598,6 @@ document.getElementById("back-top")?.addEventListener("click", () => {
   });
 })();
 
-/* Side art scroll FX (parallax + sway) */
 (function initSideArtFx() {
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const small = window.matchMedia("(max-width: 900px)").matches;
@@ -650,14 +636,34 @@ document.getElementById("back-top")?.addEventListener("click", () => {
 
   window.addEventListener("scroll", onScroll, { passive: true });
   window.addEventListener("resize", () => {
-    // disable transforms on resize-to-small
     const nowSmall = window.matchMedia("(max-width: 900px)").matches;
     if (nowSmall) arts.forEach((el) => (el.style.transform = ""));
   });
   tick();
 })();
 
-/* Fix image placeholder visibility */
+(function initContrastMode() {
+  const btn = document.getElementById("contrast-toggle");
+  if (!btn) return;
+
+  function apply(on) {
+    document.documentElement.classList.toggle("contrast-mode", on);
+    localStorage.setItem("contrast-mode", on ? "1" : "0");
+    btn.setAttribute("aria-pressed", on ? "true" : "false");
+    btn.setAttribute(
+      "aria-label",
+      on ? "Выключить контрастный режим" : "Включить контрастный режим"
+    );
+    btn.title = on ? "Обычный режим" : "Контрастный режим";
+  }
+
+  apply(document.documentElement.classList.contains("contrast-mode"));
+
+  btn.addEventListener("click", () => {
+    apply(!document.documentElement.classList.contains("contrast-mode"));
+  });
+})();
+
 document.querySelectorAll(".figure-frame img, .map-figure img").forEach((img) => {
   img.addEventListener("error", () => {
     img.closest(".figure-frame, .map-figure")?.classList.add("placeholder");
